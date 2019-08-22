@@ -7,7 +7,7 @@ A [Home Assistant][hass] component for controlling/monitoring LG devices
 or later.
 
 [hass]: https://home-assistant.io
-[wideq]: https://github.com/sampsyo/wideq
+[wideq]: https://github.com/gugu927/wideq
 
 Here's how to use this:
 
@@ -16,11 +16,11 @@ Here's how to use this:
        $ cd ~/.homeassistant
        $ mkdir custom_components
        $ cd custom_components
-       $ git clone https://github.com/sampsyo/hass-smartthinq.git smartthinq
+       $ git clone https://github.com/gugu927/hass-smartthinq.git smartthinq
 
 2. Navigate to the [WideQ][] directory. You can either use the copy installed by Home Assistant, or clone it separately by typing something like:
 
-       $ git clone https://github.com/sampsyo/wideq.git
+       $ git clone https://github.com/gugu927/wideq.git
        $ cd wideq
 
    Authenticate with the SmartThinQ service to get a refresh token by running the WideQ example script. (Eventually, I would like to add a feature to the Home Assistant component that can let you log in through a UI, but I haven't gotten there yet.) Run this in the `wideq` directory:
@@ -116,7 +116,6 @@ type: picture-elements
 Credits
 -------
 
-This is by [Adrian Sampson][adrian]. The license is [MIT][].
+This is by [GuGU927][andy]. The license is [MIT][].
 
-[adrian]: http://www.cs.cornell.edu/~asampson/
 [mit]: https://opensource.org/licenses/MIT
