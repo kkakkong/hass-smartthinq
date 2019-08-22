@@ -30,7 +30,7 @@ SMARTTHINQ_COMPONENTS = [
     'climate',
 ]
 KEY_SMARTTHINQ_DEVICES = 'smartthinq_devices'
-README_URL = 'https://github.com/sampsyo/hass-smartthinq/blob/master/README.md'
+README_URL = 'https://github.com/GuGu927/hass-smartthinq/blob/master/README.md'
 
 KEY_DEPRECATED_REFRESH_TOKEN = 'refresh_token'
 KEY_DEPRECATED_COUNTRY = 'country'
@@ -72,6 +72,7 @@ def setup(hass, config):
     hass.data[CONF_LANGUAGE] = language
 
     for device in client.devices:
+        LOGGER.debug("Device: %s" % device.type)
         hass.data[KEY_SMARTTHINQ_DEVICES].append(device.id)
 
     for component in SMARTTHINQ_COMPONENTS:
