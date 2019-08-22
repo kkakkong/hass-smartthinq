@@ -1,8 +1,8 @@
 {
     "domain": "smartthinq",
     "name": "hass-smartthinq",
-    "documentation": "https://github.com/gugu927/hass-smartthinq",
+    "documentation": "https://github.com/sampsyo/hass-smartthinq",
     "dependencies": [],
-    "codeowners": ["@gugu927"],
-    "requirements": ["wideq>=0.0.1"]
+    "codeowners": ["@sampsyo"],
+    "requirements": ["wideq>=1.0.1"]
 }
