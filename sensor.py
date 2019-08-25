@@ -6,7 +6,7 @@ import voluptuous as vol
 from custom_components.smartthinq import (
     CONF_LANGUAGE, KEY_SMARTTHINQ_DEVICES, LGDevice)
 import homeassistant.helpers.config_validation as cv
-from homeassistant.const import CONF_REGION, CONF_TOKEN, CONF_NAME, CONF_MAC
+from homeassistant.const import CONF_REGION, CONF_TOKEN
 
 import wideq
 from wideq import dryer
@@ -52,7 +52,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
             base_name = "lg_dryer_" + device.name
             LOGGER.debug("Creating new LG Dryer: %s" % base_name)
             try:
-                dryers.append(LGDryerDevice(client, device, base_name))
+                dryers.append(LGDryerDevice(client, device, base_name, device.type))
             except wideq.NotConnectedError:
                 # Dryers are only connected when in use. Ignore
                 # NotConnectedError on platform setup.
@@ -61,7 +61,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
             base_name = "lg_washer_" + device.name
             LOGGER.debug("Creating new LG Washer: %s" % base_name)
             try:
-                washers.append(LGWasherDevice(client, device, base_name))
+                washers.append(LGWasherDevice(client, device, base_name, device.type))
             except wideq.NotConnectedError:
                 # Washers are only connected when in use. Ignore
                 # NotConnectedError on platform setup.
@@ -75,7 +75,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 
 
 class LGDryerDevice(LGDevice):
-    def __init__(self, client, device, name):
+    def __init__(self, client, device, name, model_type):
         """Initialize an LG Dryer Device."""
 
         super().__init__(client, device)
@@ -89,6 +89,7 @@ class LGDryerDevice(LGDevice):
         self._dryer = dryer.DryerDevice(client, device)
         self._name = name
         self._status = None
+        self._type = model_type
         self._failed_request_count = 0
 
     @property
@@ -103,6 +104,7 @@ class LGDryerDevice(LGDevice):
         data[ATTR_WW_RESERVE_TIME_IN_MINUTES] = self.reserve_time_in_minutes
         data[ATTR_WW_COURSE] = self.course
         data[ATTR_WW_ERROR] = self.error
+        data[ATTR_WW_DEVICE_TYPE] = self.device_type
 
         # For convenience, include the state as an attribute.
         data[ATTR_WW_STATE] = self.state
@@ -111,6 +113,10 @@ class LGDryerDevice(LGDevice):
     @property
     def name(self):
         return self._name
+
+    @property
+    def device_type(self):
+        return self._type
 
     @property
     def state(self):
@@ -218,7 +224,7 @@ class LGDryerDevice(LGDevice):
 
 
 class LGWasherDevice(LGDevice):
-    def __init__(self, client, device, name):
+    def __init__(self, client, device, name, model_type):
         """Initialize an LG Washer Device."""
 
         super().__init__(client, device)
@@ -232,6 +238,7 @@ class LGWasherDevice(LGDevice):
         self._washer = washer.WasherDevice(client, device)
         self._name = name
         self._status = None
+        self._type = model_type
         self._failed_request_count = 0
 
     @property
@@ -254,6 +261,10 @@ class LGWasherDevice(LGDevice):
     @property
     def name(self):
         return self._name
+
+    @property
+    def device_type(self):
+        return self._type
 
     @property
     def state(self):
