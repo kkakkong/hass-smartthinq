@@ -2,23 +2,33 @@ import logging
 import time
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
+
+from homeassistant import const
 from homeassistant.const import CONF_REGION, CONF_TOKEN
 from homeassistant.components import climate
-from homeassistant import const
+from homeassistant.components.climate import ClimateDevice
 from homeassistant.components.climate import const as c_const
 from custom_components.smartthinq import (
     CONF_LANGUAGE, KEY_SMARTTHINQ_DEVICES, LGDevice)
 
 import wideq
 from wideq import dehum
+REQUIREMENTS = ['wideq']
 
 LOGGER = logging.getLogger(__name__)
 
-PLATFORM_SCHEMA = climate.PLATFORM_SCHEMA.extend({
-    vol.Required(KEY_DEPRECATED_REFRESH_TOKEN): cv.string,
-    KEY_DEPRECATED_COUNTRY: cv.string,
-    KEY_DEPRECATED_LANGUAGE: cv.string,
-})
+ATTR_DH_STATE = 'state'
+ATTR_DH_AIRREMOVAL_MODE = 'airremoval_mode'
+ATTR_DH_FAN_MODE = 'fan_mode'
+ATTR_DH_FAN_MODES = 'fan_modes'
+ATTR_DH_PRESET_MODE = 'preset_mode'
+ATTR_DH_PRESET_MODES = 'preset_modes'
+ATTR_DH_HVAC_MODE = 'hvac_mode'
+ATTR_DH_HVAC_MODES = 'hvac_modes'
+ATTR_DH_HUMIDITY = 'humidity'
+ATTR_DH_TARGET_HUMIDITY = 'target_humidity'
+ATTR_DH_MIN_HUMIDITY = 'min_humidity'
+ATTR_DH_MAX_HUMIDITY = 'max_humidity'
 
 MODES = {
     'SMART': '스마트제습',
@@ -28,18 +38,17 @@ MODES = {
     'CLOTHES': '의류건조',
 }
 FAN_MODES = {
-    'LOW': c_const.FAN_LOW,
-    'HIGH': c_const.FAN_HIGH,
+    'LOW': '약',
+    'HIGH': '강',
 }
 
 MAX_RETRIES = 5
-TRANSIENT_EXP = 5.0  # Report set temperature for 5 seconds.
+TRANSIENT_EXP = 5.0  # Report set temperature / humidity for 5 seconds.
 HUM_MIN = 30
 HUM_MAX = 70
 HUM_STEP = 5
 
-
-def setup_platform(hass, config, add_devices, discovery_info=None):
+async def async_setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the LG entities"""
 
     refresh_token = hass.data[CONF_TOKEN]
@@ -47,7 +56,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     language = hass.data[CONF_LANGUAGE]
 
     client = wideq.Client.from_token(refresh_token, region, language)
-    dehumifiers = []
+    dehumidifiers = []
 
     for device_id in hass.data[KEY_SMARTTHINQ_DEVICES]:
         device = client.get_device(device_id)
@@ -55,42 +64,36 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         LOGGER.debug("Device: %s" % device.type)
 
         if device.type == wideq.DeviceType.DEHUMIDIFIER:
-            base_name = "lg_dehumifier_" + device.name
-            LOGGER.debug("Creating new LG Dehumifier: %s" % base_name)
+            base_name = "lg_dehumidifier_" + device.name
+            LOGGER.debug("Creating new LG Dehumidifier: %s" % base_name)
             try:
-                dehumifiers.append(LGDehumDevice(client, device, base_name, device.typ))
+                dehumidifiers.append(LGDehumDevice(client, device, base_name))
             except wideq.NotConnectedError:
-                # Dehumifiers are only connected when in use. Ignore
+                # Dehumidifier are only connected when in use. Ignore
                 # NotConnectedError on platform setup.
                 pass
 
-    if dehumifiers:
-        add_entities(dehumifiers, True)
-    return True
+    if dehumidifiers:
+        add_devices(dehumidifiers, True)
 
-class LGDehumDevice(climate.ClimateDevice):
-    def __init__(self, client, device, name, type):
-        """Initialize an LG Dehumifier Device."""
+class LGDehumDevice(LGDevice, ClimateDevice):
+    def __init__(self, client, device, name):
+        """Initialize an LG Dehumidifier Device."""
 
         super().__init__(client, device)
 
         # This constructor is called during platform creation. It must not
-        # involve any API calls that actually need the dehumifier to be
+        # involve any API calls that actually need the dehumidifier to be
         # connected, otherwise the device construction will fail and the entity
-        # will not get created. Specifically, calls that depend on dehumifier
+        # will not get created. Specifically, calls that depend on dehumidifier
         # interaction should only happen in update(...), including the start of
         # the monitor task.
-        self._dehumifier = dehumifier.DehumDevice(client, device)
+        self._dehumidifier = dehum.DehumDevice(client, device)
         self._name = name
         self._status = None
-        self._type = type
         self._transient_humi = None
         self._transient_time = None
         self._failed_request_count = 0
-
-    @property
-    def temperature_unit(self):
-        return '%'
 
     @property
     def name(self):
@@ -104,30 +107,71 @@ class LGDehumDevice(climate.ClimateDevice):
     def available(self):
         return True
 
+    async def async_turn_on(self):
+        if self._status:
+            if not self._status.is_on:
+                self._dehumidifier.set_on(True)
+            LOGGER.info('Turn On %s', self.name)
+            await self.async_update_ha_state()
+
+    async def async_turn_off(self) :
+        if self._status:
+            if self._status.is_on:
+                self._dehumidifier.set_on(False)
+            LOGGER.info('Turn Off %s', self.name)
+            await self.async_update_ha_state()
+
+        # Fake turn off
+        if HVAC_MODE_OFF in self.hvac_modes:
+            await self.async_set_hvac_mode(HVAC_MODE_OFF)
+
     @property
     def supported_features(self):
         return (
-            c_const.SUPPORT_TARGET_TEMPERATURE |
+            c_const.SUPPORT_TARGET_HUMIDITY |
             c_const.SUPPORT_PRESET_MODE |
-            c_const.SUPPORT_FAN_MODE |
-            c_const.SUPPORT_ON_OFF
+            c_const.SUPPORT_FAN_MODE
         )
 
     @property
-    def min_temp(self):
+    def state_attributes(self):
+        """Return the optional state attributes."""
+        data = {}
+        data[ATTR_DH_STATE] = self.state
+        data[ATTR_DH_AIRREMOVAL_MODE] = self.is_airremoval_mode
+        data[ATTR_DH_FAN_MODE] = self.fan_mode
+        data[ATTR_DH_FAN_MODES] = self.fan_modes
+        data[ATTR_DH_PRESET_MODE] = self.preset_mode
+        data[ATTR_DH_PRESET_MODES] = self.preset_modes
+        data[ATTR_DH_HVAC_MODE] = self.hvac_mode
+        data[ATTR_DH_HVAC_MODES] = self.hvac_modes
+        data[ATTR_DH_HUMIDITY] = self.current_humidity
+        data[ATTR_DH_TARGET_HUMIDITY] = self.target_humidity
+        data[ATTR_DH_MIN_HUMIDITY] = self.min_humidity
+        data[ATTR_DH_MAX_HUMIDITY] = self.max_humidity
+
+        return data
+
+    @property
+    def state(self):
+        if self._status:
+            return self._status.state
+        return 'Off'
+
+    @property
+    def min_humidity(self):
         return HUM_MIN
 
     @property
-    def max_temp(self):
+    def max_humidity(self):
         return HUM_MAX
 
     @property
-    def current_temperature(self):
-        if self._state:
-            return self._state.current_humidity
+    def current_humidity(self):
+        return self._status.current_humidity if self._status else 0
 
     @property
-    def target_temperature(self):
+    def target_humidity(self):
         # Use the recently-set target temperature if it was set recently
         # (within TRANSIENT_EXP seconds ago).
         if self._transient_humi:
@@ -138,8 +182,7 @@ class LGDehumDevice(climate.ClimateDevice):
                 self._transient_humi = None
 
         # Otherwise, actually use the device's state.
-        if self._state:
-            return self._state.target_humidity
+        return self._status.target_humidity if self._status else 0
 
     @property
     def target_temperature_step(self):
@@ -147,57 +190,88 @@ class LGDehumDevice(climate.ClimateDevice):
         return HUM_STEP
 
     @property
+    def preset_mode(self):
+        if self._status:
+            if not self._status.is_on:
+                return c_const.HVAC_MODE_OFF
+            return self._status.mode
+        return c_const.HVAC_MODE_OFF
+
+    @property
     def preset_modes(self):
         return list(MODES.values())
+
+    @property
+    def hvac_mode(self):
+        if self._status:
+            if not self._status.is_on:
+                return c_const.HVAC_MODE_OFF
+            return self._status.mode
+        return c_const.HVAC_MODE_OFF
+
+    @property
+    def hvac_modes(self):
+        return [c_const.HVAC_MODE_OFF]
+
+    @property
+    def fan_mode(self):
+        if self._status:
+            if not self._status.is_on:
+                return c_const.HVAC_MODE_OFF
+            return self._status.windstrength_state
+        return c_const.HVAC_MODE_OFF
 
     @property
     def fan_modes(self):
         return list(FAN_MODES.values())
 
-    @property
-    def preset_mode(self):
-        if self._state:
-            if not self._state.is_on:
-                return c_const.HVAC_MODE_OFF
-            return self._state.mode
-
-    @property
-    def fan_mode(self):
-        if self._state:
-            if not self._state.is_on:
-                return c_const.HVAC_MODE_OFF
-            return self._state.windstrength_state
-
-    def set_preset_mode(self, preset_mode):
+    async def async_set_preset_mode(self, preset_mode):
         if preset_mode == c_const.HVAC_MODE_OFF:
             self._dehumidifier.set_on(False)
             return
 
         # Some AC units must be powered on before setting the mode.
-        if not self._state.is_on:
-            self._dehumidifier.set_on(True)
+        if self._status:
+            if not self._status.is_on:
+                self._dehumidifier.set_on(True)
+            LOGGER.info('Setting mode to %s...', preset_mode)
+            self._dehumidifier.set_mode(preset_mode)
+            LOGGER.info('Mode set.')
+            await self.async_update_ha_state()
 
-        LOGGER.info('Setting mode to %s...', preset_mode)
-        self._dehumidifier.set_mode(mode)
-        LOGGER.info('Mode set.')
-
-    def set_fan_mode(self, fan_mode):
-        if preset_mode == c_const.HVAC_MODE_OFF:
+    async def async_set_hvac_mode(self, hvac_mode):
+        if hvac_mode == c_const.HVAC_MODE_OFF:
             self._dehumidifier.set_on(False)
             return
 
         # Some AC units must be powered on before setting the mode.
-        if not self._state.is_on:
-            self._dehumidifier.set_on(True)
+        if self._status:
+            if not self._status.is_on:
+                self._dehumidifier.set_on(True)
+            LOGGER.info('Setting mode to %s...', hvac_mode)
+            self._dehumidifier.set_mode(hvac_mode)
+            LOGGER.info('Mode set.')
+            await self.async_update_ha_state()
 
-        LOGGER.info('Setting fan mode to %s', fan_mode)
-        self._dehumidifier.set_windstrength(fan_mode)
-        LOGGER.info('Fan mode set.')
+    async def async_set_fan_mode(self, fan_mode):
+        if fan_mode == c_const.HVAC_MODE_OFF:
+            self._dehumidifier.set_on(False)
+            return
+
+        # Some AC units must be powered on before setting the mode.
+        if self._status:
+            if not self._status.is_on:
+                self._dehumidifier.set_on(True)
+            LOGGER.info('Setting fan mode to %s', fan_mode)
+            self._dehumidifier.set_windstrength(fan_mode)
+            LOGGER.info('Fan mode set.')
+            await self.async_update_ha_state()
 
     @property
     def is_airremoval_mode(self):
-        if self._state:
-            return self._state.airremoval_state
+        if self._status:
+            return self._status.airremoval_state
+        return c_const.HVAC_MODE_OFF
 
     def airremoval_mode(self, airremoval_mode):
         if airremoval_mode == '켜짐':
@@ -205,14 +279,18 @@ class LGDehumDevice(climate.ClimateDevice):
         elif airremoval_mode == '꺼짐':
             self._dehum.set_airremoval(False)
 
-    def set_humidity(self, **kwargs):
+    async def async_set_humidity(self, **kwargs):
         humidity = kwargs['humidity']
         self._transient_humi = humidity
         self._transient_time = time.time()
 
-        LOGGER.info('Setting humidity to %s...', humidity)
-        self._dehumifier.set_humidity(humidity)
-        LOGGER.info('Humidity set.')
+        if self._status:
+            if not self._status.is_on:
+                self._dehumidifier.set_on(True)
+            LOGGER.info('Setting humidity to %s...', humidity)
+            self._dehumidifier.set_humidity(humidity)
+            LOGGER.info('Humidity set.')
+            await self.async_update_ha_state()
 
     def _restart_monitor(self):
         try:
