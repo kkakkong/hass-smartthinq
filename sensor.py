@@ -21,6 +21,7 @@ ATTR_WW_INITIAL_TIME = 'initial_time'
 ATTR_WW_INITIAL_TIME_IN_MINUTES = 'initial_time_in_minutes'
 ATTR_WW_RESERVE_TIME = 'reserve_time'
 ATTR_WW_RESERVE_TIME_IN_MINUTES = 'reserve_time_in_minutes'
+ATTR_WW_SMARTCOURSE = 'smart_course'
 ATTR_WW_COURSE = 'course'
 ATTR_WW_ERROR = 'error'
 ATTR_WW_DRYLEVEL = 'dry_level'
@@ -185,10 +186,7 @@ class LGDryerDevice(LGDevice):
     @property
     def course(self):
         if self._status:
-            if self._status.smart_course != KEY_WW_OFF:
-                return self._status.smart_course
-            else:
-                return self._status.course
+            return self._status.course
         return KEY_WW_OFF
 
     @property
@@ -325,6 +323,7 @@ class LGWasherDevice(LGDevice):
         data[ATTR_WW_RESERVE_TIME] = self.reserve_time
         data[ATTR_WW_RESERVE_TIME_IN_MINUTES] = self.reserve_time_in_minutes
         data[ATTR_WW_COURSE] = self.course
+        data[ATTR_WW_SMARTCOURSE] = self.smart_course
         data[ATTR_WW_ERROR] = self.error
         data[ATTR_WW_SOILLEVEL] = self.soil_level
         data[ATTR_WW_WATERTEMP] = self.water_temp
