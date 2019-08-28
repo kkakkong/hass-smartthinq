@@ -206,12 +206,12 @@ class LGDehumDevice(LGDevice, ClimateDevice):
         if self._status:
             if not self._status.is_on:
                 return c_const.HVAC_MODE_OFF
-            return self._status.mode
+            return c_const.HVAC_MODE_DRY
         return c_const.HVAC_MODE_OFF
 
     @property
     def hvac_modes(self):
-        return [c_const.HVAC_MODE_OFF]
+        return [c_const.HVAC_MODE_DRY] + [c_const.HVAC_MODE_OFF]
 
     @property
     def fan_mode(self):
