@@ -62,7 +62,6 @@ async def async_setup_platform(hass, config, add_devices, discovery_info=None):
 
     for device_id in hass.data[KEY_SMARTTHINQ_DEVICES]:
         device = client.get_device(device_id)
-        model = client.model_info(device)
         LOGGER.debug("Device: %s" % device.type)
 
         if device.type == wideq.DeviceType.DEHUMIDIFIER:
