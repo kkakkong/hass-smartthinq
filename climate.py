@@ -11,9 +11,23 @@ from homeassistant.components.climate import const as c_const
 from custom_components.smartthinq import (
     CONF_LANGUAGE, KEY_SMARTTHINQ_DEVICES, LGDevice)
 
+KEY_DH_OFF = 'off'
+
+MODES = {
+    'SMART': '스마트제습',
+    'SPEED': '쾌속제습',
+    'SILENT': '저소음제습',
+    'FOCUS': '집중건조',
+    'CLOTHES': '의류건조',
+}
+FAN_MODES = {
+    'LOW': '약',
+    'HIGH': '강',
+}
+
+REQUIREMENTS = ['wideq']
 import wideq
 from wideq import dehum
-REQUIREMENTS = ['wideq']
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,18 +43,6 @@ ATTR_DH_HUMIDITY = 'humidity'
 ATTR_DH_TARGET_HUMIDITY = 'target_humidity'
 ATTR_DH_MIN_HUMIDITY = 'min_humidity'
 ATTR_DH_MAX_HUMIDITY = 'max_humidity'
-
-MODES = {
-    'SMART': '스마트제습',
-    'SPEED': '쾌속제습',
-    'SILENT': '저소음제습',
-    'FOCUS': '집중건조',
-    'CLOTHES': '의류건조',
-}
-FAN_MODES = {
-    'LOW': '약',
-    'HIGH': '강',
-}
 
 MAX_RETRIES = 5
 TRANSIENT_EXP = 5.0  # Report set temperature / humidity for 5 seconds.
@@ -122,8 +124,8 @@ class LGDehumDevice(LGDevice, ClimateDevice):
             await self.async_update_ha_state()
 
         # Fake turn off
-        if HVAC_MODE_OFF in self.hvac_modes:
-            await self.async_set_hvac_mode(HVAC_MODE_OFF)
+        if c_const.HVAC_MODE_OFF in self.hvac_modes:
+            await self.async_set_hvac_mode(c_const.HVAC_MODE_OFF)
 
     @property
     def supported_features(self):
@@ -156,7 +158,7 @@ class LGDehumDevice(LGDevice, ClimateDevice):
     def state(self):
         if self._status:
             return self._status.state
-        return 'Off'
+        return KEY_DH_OFF
 
     @property
     def min_humidity(self):
@@ -230,7 +232,6 @@ class LGDehumDevice(LGDevice, ClimateDevice):
             self._dehumidifier.set_on(False)
             return
 
-        # Some AC units must be powered on before setting the mode.
         if self._status:
             if not self._status.is_on:
                 self._dehumidifier.set_on(True)
@@ -244,7 +245,6 @@ class LGDehumDevice(LGDevice, ClimateDevice):
             self._dehumidifier.set_on(False)
             return
 
-        # Some AC units must be powered on before setting the mode.
         if self._status:
             if not self._status.is_on:
                 self._dehumidifier.set_on(True)
@@ -258,7 +258,6 @@ class LGDehumDevice(LGDevice, ClimateDevice):
             self._dehumidifier.set_on(False)
             return
 
-        # Some AC units must be powered on before setting the mode.
         if self._status:
             if not self._status.is_on:
                 self._dehumidifier.set_on(True)

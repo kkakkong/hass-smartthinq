@@ -8,10 +8,13 @@ from custom_components.smartthinq import (
     CONF_LANGUAGE, KEY_SMARTTHINQ_DEVICES, LGDevice)
 from homeassistant.const import CONF_REGION, CONF_TOKEN
 
+KEY_WW_OFF = '꺼짐'
+KEY_WW_UNSUPPORT = '미지원'
+
+REQUIREMENTS = ['wideq']
 import wideq
 from wideq import dryer
 from wideq import washer
-REQUIREMENTS = ['wideq']
 
 ATTR_WW_STATE = 'state'
 ATTR_WW_DEVICETYPE = 'type'
@@ -49,9 +52,6 @@ ATTR_WW_TUBCLEANCOUNT = 'tubclean_count'
 ATTR_WW_LOADLEVEL = 'load_level'
 
 MAX_RETRIES = 5
-
-KEY_WW_OFF = '꺼짐'
-KEY_WW_DISCONNECTED = '연결해제'
 
 LOGGER = logging.getLogger(__name__)
 
@@ -193,7 +193,7 @@ class LGDryerDevice(LGDevice):
     def error(self):
         if self._status:
             return self._status.error
-        return KEY_WW_DISCONNECTED
+        return KEY_WW_OFF
 
     def _restart_monitor(self):
         try:
@@ -207,49 +207,49 @@ class LGDryerDevice(LGDevice):
     @property
     def dry_level(self):
         if self._status:
-            if self._status.dry_level != KEY_WW_OFF:
+            if self._status.dry_level != KEY_WW_UNSUPPORT:
                 return self._status.dry_level
         return KEY_WW_OFF
 
     @property
     def eco_hybrid(self):
         if self._status:
-            if self._status.eco_hybrid != KEY_WW_OFF:
+            if self._status.eco_hybrid != KEY_WW_UNSUPPORT:
                 return self._status.eco_hybrid
         return KEY_WW_OFF
 
     @property
     def anti_crease(self):
         if self._status:
-            if self._status.anti_crease != KEY_WW_OFF:
+            if self._status.anti_crease != KEY_WW_UNSUPPORT:
                 return self._status.anti_crease
         return KEY_WW_OFF
 
     @property
     def child_lock(self):
         if self._status:
-            if self._status.child_lock != KEY_WW_OFF:
+            if self._status.child_lock != KEY_WW_UNSUPPORT:
                 return self._status.child_lock
         return KEY_WW_OFF
 
     @property
     def self_cleaning(self):
         if self._status:
-            if self._status.self_cleaning != KEY_WW_OFF:
+            if self._status.self_cleaning != KEY_WW_UNSUPPORT:
                 return self._status.self_cleaning
         return KEY_WW_OFF
 
     @property
     def damp_dry_beep(self):
         if self._status:
-            if self._status.damp_dry_beep != KEY_WW_OFF:
+            if self._status.damp_dry_beep != KEY_WW_UNSUPPORT:
                 return self._status.damp_dry_beep
         return KEY_WW_OFF
 
     @property
     def hand_iron(self):
         if self._status:
-            if self._status.hand_iron != KEY_WW_OFF:
+            if self._status.hand_iron != KEY_WW_UNSUPPORT:
                 return self._status.hand_iron
         return KEY_WW_OFF
 
@@ -417,131 +417,131 @@ class LGWasherDevice(LGDevice):
     def error(self):
         if self._status:
             return self._status.error
-        return KEY_WW_DISCONNECTED
+        return KEY_WW_OFF
 
     @property
     def soil_level(self):
         if self._status:
-            if self._status.soil_level != KEY_WW_OFF:
+            if self._status.soil_level != KEY_WW_UNSUPPORT:
                 return self._status.soil_level
         return KEY_WW_OFF
 
     @property
     def water_temp(self):
         if self._status:
-            if self._status.water_temp != KEY_WW_OFF:
+            if self._status.water_temp != KEY_WW_UNSUPPORT:
                 return self._status.water_temp
         return KEY_WW_OFF
 
     @property
     def spin_speed(self):
         if self._status:
-            if self._status.spin_speed != KEY_WW_OFF:
+            if self._status.spin_speed != KEY_WW_UNSUPPORT:
                 return self._status.spin_speed
         return KEY_WW_OFF
 
     @property
     def rinse_count(self):
         if self._status:
-            if self._status.rinse_count != KEY_WW_OFF:
+            if self._status.rinse_count != KEY_WW_UNSUPPORT:
                 return self._status.rinse_count
         return KEY_WW_OFF
 
     @property
     def dry_level(self):
         if self._status:
-            if self._status.dry_level != KEY_WW_OFF:
+            if self._status.dry_level != KEY_WW_UNSUPPORT:
                 return self._status.dry_level
         return KEY_WW_OFF
 
     @property
     def water_level(self):
         if self._status:
-            if self._status.water_level != KEY_WW_OFF:
+            if self._status.water_level != KEY_WW_UNSUPPORT:
                 return self._status.water_level
         return KEY_WW_OFF
 
     @property
     def water_flow(self):
         if self._status:
-            if self._status.water_flow != KEY_WW_OFF:
+            if self._status.water_flow != KEY_WW_UNSUPPORT:
                 return self._status.water_flow
         return KEY_WW_OFF
 
     @property
     def soak(self):
         if self._status:
-            if self._status.soak != KEY_WW_OFF:
+            if self._status.soak != KEY_WW_UNSUPPORT:
                 return self._status.soak
         return KEY_WW_OFF
 
     @property
     def fresh_care(self):
         if self._status:
-            if self._status.fresh_care != KEY_WW_OFF:
+            if self._status.fresh_care != KEY_WW_UNSUPPORT:
                 return self._status.fresh_care
         return KEY_WW_OFF
 
     @property
     def child_lock(self):
         if self._status:
-            if self._status.child_lock != KEY_WW_OFF:
+            if self._status.child_lock != KEY_WW_UNSUPPORT:
                 return self._status.child_lock
         return KEY_WW_OFF
 
     @property
     def door_lock(self):
         if self._status:
-            if self._status.door_lock != KEY_WW_OFF:
+            if self._status.door_lock != KEY_WW_UNSUPPORT:
                 return self._status.door_lock
         return KEY_WW_OFF
 
     @property
     def steam(self):
         if self._status:
-            if self._status.steam != KEY_WW_OFF:
+            if self._status.steam != KEY_WW_UNSUPPORT:
                 return self._status.steam
         return KEY_WW_OFF
 
     @property
     def turbo_shot(self):
         if self._status:
-            if self._status.turbo_shot != KEY_WW_OFF:
+            if self._status.turbo_shot != KEY_WW_UNSUPPORT:
                 return self._status.turbo_shot
         return KEY_WW_OFF
 
     @property
     def buzzer(self):
         if self._status:
-            if self._status.buzzer != KEY_WW_OFF:
+            if self._status.buzzer != KEY_WW_UNSUPPORT:
                 return self._status.buzzer
         return KEY_WW_OFF
 
     @property
     def sterilize(self):
         if self._status:
-            if self._status.sterilize != KEY_WW_OFF:
+            if self._status.sterilize != KEY_WW_UNSUPPORT:
                 return self._status.sterilize
         return KEY_WW_OFF
 
     @property
     def heater(self):
         if self._status:
-            if self._status.heater != KEY_WW_OFF:
+            if self._status.heater != KEY_WW_UNSUPPORT:
                 return self._status.heater
         return KEY_WW_OFF
 
     @property
     def tubclean_count(self):
         if self._status:
-            if self._status.tubclean_count != KEY_WW_OFF:
+            if self._status.tubclean_count != KEY_WW_UNSUPPORT:
                 return self._status.tubclean_count
         return KEY_WW_OFF
 
     @property
     def load_level(self):
         if self._status:
-            if self._status.load_level != KEY_WW_OFF:
+            if self._status.load_level != KEY_WW_UNSUPPORT:
                 return self._status.load_level
         return KEY_WW_OFF
 
