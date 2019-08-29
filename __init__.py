@@ -1,13 +1,13 @@
 """
 Support for LG Smartthinq devices.
 """
-import logging
 import wideq
-
+import logging
 import voluptuous as vol
+import homeassistant.helpers.config_validation as cv
+
 
 from homeassistant.const import CONF_REGION, CONF_TOKEN
-import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers import discovery
 from homeassistant.helpers.entity import Entity
 
