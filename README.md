@@ -51,3 +51,4 @@ This library originated from [Adrian Sampson][sampson]
 
 [mit]: https://opensource.org/licenses/MIT
 [sampson]: https://github.com/sampsyo/hass-smartthinq
+[andy]: https://github.com/gugu927/hass-smartthinq
