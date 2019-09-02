@@ -4,5 +4,5 @@
     "documentation": "https://github.com/gugu927/hass-smartthinq",
     "dependencies": [],
     "codeowners": ["@gugu927"],
-    "requirements": ["wideq_gu >= 0.0.1"]
+    "requirements": ["wideq_gu==0.0.1b0"]
 }
