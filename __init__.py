@@ -6,7 +6,6 @@ import logging
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 
-
 from homeassistant.const import CONF_REGION, CONF_TOKEN
 from homeassistant.helpers import discovery
 from homeassistant.helpers.entity import Entity

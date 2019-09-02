@@ -11,9 +11,14 @@ from homeassistant.components.climate import const as c_const
 from custom_components.smartthinq import (
     CONF_LANGUAGE, KEY_SMARTTHINQ_DEVICES, LGDevice)
 
+KEY_DH_ON = 'on'
 KEY_DH_OFF = 'off'
 
-MODES = {
+HVAC_MODES = {
+    'DRY': c_const.HVAC_MODE_DRY,
+    'OFF': c_const.HVAC_MODE_OFF,
+}
+PRESET_MODES = {
     'SMART': '스마트제습',
     'SPEED': '쾌속제습',
     'SILENT': '저소음제습',
@@ -101,6 +106,12 @@ class LGDehumDevice(LGDevice, ClimateDevice):
         return self._name
 
     @property
+    def is_on(self):
+        if self._status:
+            return self._status.is_on
+        return False
+
+    @property
     def device_type(self):
         return self._type
 
@@ -154,10 +165,26 @@ class LGDehumDevice(LGDevice, ClimateDevice):
         return data
 
     @property
+    def precision(self):
+        return const.PRECISION_WHOLE
+
+    @property
+    def temperature_unit(self):
+        return const.TEMP_CELSIUS
+
+    @property
     def state(self):
-        if self._status:
-            return self._status.state
+        if self._status and self._status.state == '켜짐':
+            return KEY_DH_ON
         return KEY_DH_OFF
+
+    @property
+    def min_temp(self):
+        return HUM_MIN
+
+    @property
+    def max_temp(self):
+        return HUM_MAX
 
     @property
     def min_humidity(self):
@@ -186,6 +213,32 @@ class LGDehumDevice(LGDevice, ClimateDevice):
         return self._status.target_humidity if self._status else 0
 
     @property
+    def current_temperature(self):
+        return self._status.current_humidity if self._status else 0
+
+    @property
+    def target_temperature(self):
+        # Use the recently-set target temperature if it was set recently
+        # (within TRANSIENT_EXP seconds ago).
+        if self._transient_humi:
+            interval = time.time() - self._transient_time
+            if interval < TRANSIENT_EXP:
+                return self._transient_humi
+            else:
+                self._transient_humi = None
+
+        # Otherwise, actually use the device's state.
+        return self._status.target_humidity if self._status else 0
+
+    @property
+    def target_temperature_low(self):
+        return HUM_MIN
+
+    @property
+    def target_temperature_high(self):
+        return HUM_MAX
+
+    @property
     def target_temperature_step(self):
         """Return the supported step of target temperature."""
         return HUM_STEP
@@ -200,7 +253,7 @@ class LGDehumDevice(LGDevice, ClimateDevice):
 
     @property
     def preset_modes(self):
-        return list(MODES.values())
+        return list(PRESET_MODES.values())
 
     @property
     def hvac_mode(self):
@@ -212,7 +265,7 @@ class LGDehumDevice(LGDevice, ClimateDevice):
 
     @property
     def hvac_modes(self):
-        return [c_const.HVAC_MODE_DRY] + [c_const.HVAC_MODE_OFF]
+        return list(HVAC_MODES.values())
 
     @property
     def fan_mode(self):
@@ -247,16 +300,14 @@ class LGDehumDevice(LGDevice, ClimateDevice):
         if self._status:
             if not self._status.is_on:
                 self._dehumidifier.set_on(True)
-            LOGGER.info('Setting mode to %s...', hvac_mode)
-            self._dehumidifier.set_mode(hvac_mode)
+            if hvac_mode == 'dry':
+                value = '스마트제습'
+            LOGGER.info('Setting mode to %s...', value)
+            self._dehumidifier.set_mode(value)
             LOGGER.info('Mode set.')
             await self.async_update_ha_state()
 
     async def async_set_fan_mode(self, fan_mode):
-        if fan_mode == c_const.HVAC_MODE_OFF:
-            self._dehumidifier.set_on(False)
-            return
-
         if self._status:
             if not self._status.is_on:
                 self._dehumidifier.set_on(True)
@@ -276,6 +327,19 @@ class LGDehumDevice(LGDevice, ClimateDevice):
             self._dehum.set_airremoval(True)
         elif airremoval_mode == '꺼짐':
             self._dehum.set_airremoval(False)
+
+    async def async_set_temperature(self, **kwargs):
+        temperature = kwargs['temperature']
+        self._transient_humi = temperature
+        self._transient_time = time.time()
+
+        if self._status:
+            if not self._status.is_on:
+                self._dehumidifier.set_on(True)
+            LOGGER.info('Setting temperature to %s...', temperature)
+            self._dehumidifier.set_humidity(temperature)
+            LOGGER.info('Temperature set.')
+            await self.async_update_ha_state()
 
     async def async_set_humidity(self, **kwargs):
         humidity = kwargs['humidity']

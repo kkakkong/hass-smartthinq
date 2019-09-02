@@ -25,6 +25,8 @@ ATTR_WW_INITIAL_TIME_IN_MINUTES = 'initial_time_in_minutes'
 ATTR_WW_RESERVE_TIME = 'reserve_time'
 ATTR_WW_RESERVE_TIME_IN_MINUTES = 'reserve_time_in_minutes'
 ATTR_WW_SMARTCOURSE = 'smart_course'
+ATTR_WW_PROCESSSTATE = 'process_state'
+ATTR_WW_PREVIOUSSTATE = 'previous_state'
 ATTR_WW_COURSE = 'course'
 ATTR_WW_ERROR = 'error'
 ATTR_WW_DRYLEVEL = 'dry_level'
@@ -124,7 +126,9 @@ class LGDryerDevice(LGDevice):
         data[ATTR_WW_INITIAL_TIME_IN_MINUTES] = self.initial_time_in_minutes
         data[ATTR_WW_RESERVE_TIME] = self.reserve_time
         data[ATTR_WW_RESERVE_TIME_IN_MINUTES] = self.reserve_time_in_minutes
+        data[ATTR_WW_PROCESSSTATE] = self.process_state
         data[ATTR_WW_COURSE] = self.course
+        data[ATTR_WW_SMARTCOURSE] = self.smart_course
         data[ATTR_WW_ERROR] = self.error
         data[ATTR_WW_DRYLEVEL] = self.dry_level
         data[ATTR_WW_ECOHYBRID] = self.eco_hybrid
@@ -183,9 +187,21 @@ class LGDryerDevice(LGDevice):
         return self._status.reserve_time if self._status else 0
 
     @property
+    def process_state(self):
+        if self._status:
+            return self._status.process_state
+        return KEY_WW_OFF
+
+    @property
     def course(self):
         if self._status:
             return self._status.course
+        return KEY_WW_OFF
+
+    @property
+    def smart_course(self):
+        if self._status:
+            return self._status.smart_course
         return KEY_WW_OFF
 
     @property
@@ -321,6 +337,7 @@ class LGWasherDevice(LGDevice):
         data[ATTR_WW_INITIAL_TIME_IN_MINUTES] = self.initial_time_in_minutes
         data[ATTR_WW_RESERVE_TIME] = self.reserve_time
         data[ATTR_WW_RESERVE_TIME_IN_MINUTES] = self.reserve_time_in_minutes
+        data[ATTR_WW_PREVIOUSSTATE] = self.previous_state
         data[ATTR_WW_COURSE] = self.course
         data[ATTR_WW_SMARTCOURSE] = self.smart_course
         data[ATTR_WW_ERROR] = self.error
@@ -399,6 +416,12 @@ class LGWasherDevice(LGDevice):
     @property
     def reserve_time_in_minutes(self):
         return self._status.reserve_time if self._status else 0
+
+    @property
+    def previous_state(self):
+        if self._status:
+            return self._status.previous_state
+        return KEY_WW_OFF
 
     @property
     def course(self):
