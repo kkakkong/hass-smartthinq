@@ -1,0 +1,67 @@
+# LG SmartThinq
+dryer:
+  name: 건조기
+  entities:
+    - sensor.dryer_state
+    - sensor.dryer_process_state
+    - sensor.dryer_course
+    - sensor.dryer_smart_course
+    - sensor.dryer_initial_time
+    - sensor.dryer_remain_time
+    - sensor.dryer_reserve_time
+    - sensor.dryer_drylevel
+    - sensor.dryer_ecohybrid
+    - sensor.dryer_anticrease
+    - sensor.dryer_childlock
+    - sensor.dryer_dampdrybeep
+    - sensor.dryer_handiron
+    - sensor.dryer_selfcleaning
+    - sensor.dryer_error
+washer:
+  name: 세탁기
+  entities:
+    - sensor.washer_state
+    - sensor.washer_previous_state
+    - sensor.washer_course
+    - sensor.washer_smart_course
+    - sensor.washer_initial_time
+    - sensor.washer_remain_time
+    - sensor.washer_reserve_time
+    - sensor.washer_dry_level
+    - sensor.washer_fresh_care
+    - sensor.washer_child_lock
+    - sensor.washer_load_level
+    - sensor.washer_rinse_count
+    - sensor.washer_soil_level
+    - sensor.washer_spin_speed
+    - sensor.washer_steam
+    - sensor.washer_turbo_shot
+    - sensor.washer_water_temp
+    - sensor.washer_tubclean_count
+    - sensor.washer_error
+washer_mini:
+  name: 미니워시
+  entities:
+    - sensor.washer_mini_state
+    - sensor.washer_mini_previous_state
+    - sensor.washer_mini_course
+    - sensor.washer_mini_smart_course
+    - sensor.washer_mini_initial_time
+    - sensor.washer_mini_remain_time
+    - sensor.washer_mini_reserve_time
+    - sensor.washer_mini_dry_level
+    - sensor.washer_mini_buzzer
+    - sensor.washer_mini_child_lock
+    - sensor.washer_mini_door_lock
+    - sensor.washer_mini_heater
+    - sensor.washer_mini_rinse_count
+    - sensor.washer_mini_soak
+    - sensor.washer_mini_soil_level
+    - sensor.washer_mini_spin_speed
+    - sensor.washer_mini_steam
+    - sensor.washer_mini_sterilize
+    - sensor.washer_mini_turbo_shot
+    - sensor.washer_mini_water_flow
+    - sensor.washer_mini_water_level
+    - sensor.washer_mini_water_temp
+    - sensor.washer_mini_error
