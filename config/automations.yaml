@@ -1,0 +1,88 @@
+# LG SmartThinq
+# service: notify.sender 를 본인의 상황에 맞게 바꾸면 됩니다.
+- id: timer_dryer_remain_time_start
+  alias: 건조기 남은시간 타이머 시작
+  hide_entity: true
+  trigger:
+  - entity_id: sensor.dryer_remain_time_minute
+    platform: state
+  condition:
+  - condition: template
+    value_template: '{% if states("sensor.dryer_remain_time_minute") | int > 2 %}true{%else %}false{% endif %}'
+  action:
+  - service: timer.start
+    entity_id: timer.dryer_remain_timer
+    data_template:
+      duration: '{{ states("sensor.dryer_remain_time_minute") | int | multiply(60) | timestamp_custom("%X",false) }}'
+- id: timer_dryer_remain_time_finish
+  alias: 건조기 남은시간 타이머 종료
+  hide_entity: true
+  trigger:
+  - platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.dryer_remain_timer
+  condition: []
+  action: 
+  - data:
+      message: 건조가 완료되었습니다.
+      title: '[[건조기]]'
+    service: notify.sender
+
+- id: timer_washer_remain_time_start
+  alias: 세탁기 남은시간 타이머 시작
+  hide_entity: true
+  trigger:
+  - entity_id: sensor.washer_remain_time_minute
+    platform: state
+  condition:
+  - condition: template
+    value_template: '{% if states("sensor.washer_remain_time_minute") | int > 2 %}true{%else %}false{% endif %}'
+  action:
+  - service: timer.start
+    entity_id: timer.washer_remain_timer
+    data_template:
+      duration: '{{ states("sensor.washer_remain_time_minute") | int | multiply(60) | timestamp_custom("%X",false) }}'
+- id: timer_washer_remain_time_finish
+  alias: 세탁기 남은시간 타이머 종료
+  hide_entity: true
+  trigger:
+  - platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.washer_remain_timer
+  condition: []
+  action: 
+  - data:
+      message: 세탁이 완료되었습니다.
+      title: '[[세탁기]]'
+    service: notify.sender
+
+- id: timer_washer_mini_remain_time_start
+  alias: 미니워시 남은시간 타이머 시작
+  hide_entity: true
+  trigger:
+  - entity_id: sensor.washer_mini_remain_time_minute
+    platform: state
+  condition:
+  - condition: template
+    value_template: '{% if states("sensor.washer_mini_remain_time_minute") | int > 2 %}true{%else %}false{% endif %}'
+  action:
+  - service: timer.start
+    entity_id: timer.washer_mini_remain_timer
+    data_template:
+      duration: '{{ states("sensor.washer_mini_remain_time_minute") | int | multiply(60) | timestamp_custom("%X",false) }}'
+- id: timer_washer_mini_remain_time_finish
+  alias: 미니워시 남은시간 타이머 종료
+  hide_entity: true
+  trigger:
+  - platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.washer_mini_remain_timer
+  condition: []
+  action: 
+  - data:
+      message: 세탁이 완료되었습니다.
+      title: '[[미니워시]]'
+    service: notify.sender

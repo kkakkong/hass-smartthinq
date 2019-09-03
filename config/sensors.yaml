@@ -1,0 +1,303 @@
+# LG SmartThinq
+
+# 건조기
+# sensor.lg_dryer 를 본인의 상황에 맞게 바꾸면 됩니다.
+- platform: template
+  sensors:
+    dryer_state:
+      friendly_name: '동작상태'
+      icon_template: mdi:tumble-dryer
+      value_template: '{{ state_attr("sensor.lg_dryer", "state") }}'
+    dryer_initial_time:
+      friendly_name: '코스시간'
+      icon_template: mdi:clock-outline
+      value_template: '{{ state_attr("sensor.lg_dryer", "initial_time") | timestamp_custom("%H:%M") }}'
+    dryer_remain_time:
+      friendly_name: '남은시간'
+      icon_template: mdi:clock-outline
+      value_template: '{{ state_attr("sensor.lg_dryer", "remaining_time") | timestamp_custom("%H:%M") }}'
+    dryer_remain_time_minute:
+      friendly_name: '남은시간(분)'
+      icon_template: mdi:clock-outline
+      value_template: '{{ state_attr("sensor.lg_dryer", "remaining_time_in_minutes") }}'
+    dryer_reserve_time:
+      friendly_name: '예약시간'
+      icon_template: mdi:camera-timer
+      value_template: '{{ state_attr("sensor.lg_dryer", "reserve_time") | timestamp_custom("%H:%M") }}'
+    dryer_course:
+      friendly_name: '건조코스'
+      icon_template: mdi:pin-outline
+      value_template: '{{ state_attr("sensor.lg_dryer", "course") }}'
+    dryer_smart_course:
+      friendly_name: '스마트코스'
+      icon_template: mdi:pin-outline
+      value_template: '{{ state_attr("sensor.lg_dryer", "smart_course") }}'
+    dryer_error:
+      friendly_name: '에러'
+      icon_template: mdi:alert-circle-outline
+      value_template: '{{ state_attr("sensor.lg_dryer", "error") }}'
+    dryer_drylevel:
+      friendly_name: '건조정도'
+      icon_template: mdi:gauge
+      value_template: '{{ state_attr("sensor.lg_dryer", "dry_level") }}'
+    dryer_ecohybrid:
+      friendly_name: '절약건조'
+      icon_template: mdi:power-plug-off
+      value_template: '{{ state_attr("sensor.lg_dryer", "eco_hybrid") }}'
+    dryer_process_state:
+      friendly_name: '수행상태'
+      icon_template: mid:tumble-dryer
+      value_template: '{{ state_attr("sensor.lg_dryer", "process_state") }}'
+    dryer_anticrease:
+      friendly_name: '구김방지'
+      icon_template: mdi:tumble-dryer
+      value_template: '{{ state_attr("sensor.lg_dryer", "anti_crease") }}'
+    dryer_childlock:
+      friendly_name: '버튼잠금'
+      icon_template: mdi:lock-outline
+      value_template: '{{ state_attr("sensor.lg_dryer", "child_lock") }}'
+    dryer_selfcleaning:
+      friendly_name: '자동세척'
+      icon_template: mdi:tumble-dryer
+      value_template: '{{ state_attr("sensor.lg_dryer", "self_cleaning") }}'
+    dryer_dampdrybeep:
+      friendly_name: '적정 건조 알림'
+      icon_template: mdi:bell-outline
+      value_template: '{{ state_attr("sensor.lg_dryer", "damp_dry_beep") }}'
+    dryer_handiron:
+      friendly_name: '다림질모드'
+      icon_template: mdi:tumble-dryer
+      value_template: '{{ state_attr("sensor.lg_dryer", "hand_iron") }}'
+
+# 세탁기
+# sensor.lg_washer 를 본인의 상황에 맞게 바꾸면 됩니다.
+- platform: template
+  sensors:
+    washer_state:
+      friendly_name: '현재상태'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer", "state") }}'
+    washer_previous_state:
+      friendly_name: '이전상태'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer", "previous_state") }}'
+    washer_initial_time:
+      friendly_name: '코스시간'
+      icon_template: mdi:clock-outline
+      value_template: '{{ state_attr("sensor.lg_washer", "initial_time") | timestamp_custom("%H:%M") }}'
+    washer_remain_time:
+      friendly_name: '남은시간'
+      icon_template: mdi:clock-outline
+      value_template: '{{ state_attr("sensor.lg_washer", "remaining_time") | timestamp_custom("%H:%M") }}'
+    washer_remain_time_minute:
+      friendly_name: '남은시간(분)'
+      icon_template: mdi:clock-outline
+      value_template: '{{ state_attr("sensor.lg_washer", "remaining_time_in_minutes") }}'
+    washer_reserve_time:
+      friendly_name: '예약시간'
+      icon_template: mdi:camera-timer
+      value_template: '{{ state_attr("sensor.lg_washer", "reserve_time") | timestamp_custom("%H:%M") }}'
+    washer_course:
+      friendly_name: '세탁코스'
+      icon_template: mdi:pin-outline
+      value_template: '{{ state_attr("sensor.lg_washer", "course") }}'
+    washer_smart_course:
+      friendly_name: '스마트코스'
+      icon_template: mdi:pin-outline
+      value_template: '{{ state_attr("sensor.lg_washer", "smart_course") }}'
+    washer_error:
+      friendly_name: '에러'
+      icon_template: mdi:alert-circle-outline
+      value_template: '{{ state_attr("sensor.lg_washer", "error") }}'
+    washer_soil_level:
+      friendly_name: '세탁'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer", "soil_level") }}'
+    washer_rinse_count:
+      friendly_name: '헹굼'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer", "rinse_count") }}'
+    washer_spin_speed:
+      friendly_name: '탈수'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer", "spin_speed") }}'
+    washer_water_temp:
+      friendly_name: '물온도'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer", "water_temp") }}'
+    washer_dry_level:
+      friendly_name: '건조'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer", "dry_level") }}'
+    washer_child_lock:
+      friendly_name: '버튼잠금'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer", "child_lock") }}'
+    washer_fresh_care:
+      friendly_name: '구김방지'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer", "fresh_care") }}'
+    washer_steam:
+      friendly_name: '스팀'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer", "steam") }}'
+    washer_turbo_shot:
+      friendly_name: '터보샷'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer", "turbo_shot") }}'
+    washer_tubclean_count:
+      friendly_name: '통세척 - 30회 주기'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer", "tubclean_count") }}'
+      unit_of_measurement: '회'
+    washer_load_level:
+      friendly_name: '세탁물량'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer", "load_level") }}'
+
+# 미니워시
+# sensor.lg_washer_mini 를 본인의 상황에 맞게 바꾸면 됩니다.
+- platform: template
+  sensors:
+    washer_mini_state:
+      friendly_name: '현재상태'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "state") }}'
+    washer_mini_previous_state:
+      friendly_name: '이전상태'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "previous_state") }}'
+    washer_mini_initial_time:
+      friendly_name: '코스시간'
+      icon_template: mdi:clock-outline
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "initial_time") | timestamp_custom("%H:%M") }}'
+    washer_mini_remain_time:
+      friendly_name: '남은시간'
+      icon_template: mdi:clock-outline
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "remaining_time") | timestamp_custom("%H:%M") }}'
+    washer_mini_remain_time_minute:
+      friendly_name: '남은시간(분)'
+      icon_template: mdi:clock-outline
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "remaining_time_in_minutes") }}'
+    washer_mini_reserve_time:
+      friendly_name: '예약시간'
+      icon_template: mdi:camera-timer
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "reserve_time") | timestamp_custom("%H:%M") }}'
+    washer_mini_course:
+      friendly_name: '세탁코스'
+      icon_template: mdi:pin-outline
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "course") }}'
+    washer_mini_smart_course:
+      friendly_name: '스마트코스'
+      icon_template: mdi:pin-outline
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "smart_course") }}'
+    washer_mini_error:
+      friendly_name: '에러'
+      icon_template: mdi:alert-circle-outline
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "error") }}'
+    washer_mini_soil_level:
+      friendly_name: '세탁'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "soil_level") }}'
+    washer_mini_rinse_count:
+      friendly_name: '헹굼'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "rinse_count") }}'
+    washer_mini_spin_speed:
+      friendly_name: '탈수'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "spin_speed") }}'
+    washer_mini_water_temp:
+      friendly_name: '물온도'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "water_temp") }}'
+    washer_mini_child_lock:
+      friendly_name: '버튼잠금'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "child_lock") }}'
+    washer_mini_steam:
+      friendly_name: '스팀'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "steam") }}'
+    washer_mini_turbo_shot:
+      friendly_name: '터보샷'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "turbo_shot") }}'
+    washer_mini_water_level:
+      friendly_name: '물높이'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "water_level") }}'
+    washer_mini_water_flow:
+      friendly_name: '물살'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "water_flow") }}'
+    washer_mini_soak:
+      friendly_name: '불림'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "soak") }}'
+    washer_mini_door_lock:
+      friendly_name: '도어락'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "door_lock") }}'
+    washer_mini_buzzer:
+      friendly_name: '부저'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "buzzer") }}'
+    washer_mini_sterilize:
+      friendly_name: '살균'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "sterilize") }}'
+    washer_mini_heater:
+      friendly_name: '고온'
+      icon_template: mdi:washing-machine
+      value_template: '{{ state_attr("sensor.lg_washer_mini", "heater") }}'
+- platform: template
+  sensors:
+    dh_livingroom_state:
+      friendly_name: '전원'
+      icon_template: mdi:power
+      value_template: '{% if state_attr("climate.lg_dehumidifier_jeseubgi_geosil", "state") == "on" %}켜짐{% else %}꺼짐{% endif %}'
+    dh_livingroom_airremoval:
+      friendly_name: '공기제균'
+      icon_template: mdi:air-filter
+      value_template: '{% if state_attr("climate.lg_dehumidifier_jeseubgi_geosil", "airremoval_mode") == "ON" %}켜짐{% else %}꺼짐{% endif %}'
+    dh_livingroom_mode:
+      friendly_name: '모드'
+      icon_template: mdi:play-box-outline
+      value_template: '{{ state_attr("climate.lg_dehumidifier_jeseubgi_geosil", "preset_mode") }}'
+    dh_livingroom_fan:
+      friendly_name: '풍량'
+      icon_template: mdi:fan
+      value_template: '{{ state_attr("climate.lg_dehumidifier_jeseubgi_geosil", "fan_mode") }}'
+    dh_livingroom_humidity:
+      friendly_name: '현재습도'
+      icon_template: mdi:water-percent
+      value_template: '{{ state_attr("climate.lg_dehumidifier_jeseubgi_geosil", "humidity") }}'
+    dh_livingroom_target_humidity:
+      friendly_name: '목표습도'
+      icon_template: mdi:target
+      value_template: '{{ state_attr("climate.lg_dehumidifier_jeseubgi_geosil", "target_humidity") }}'
+    dh_bedroom_state:
+      friendly_name: '전원'
+      icon_template: mdi:power
+      value_template: '{% if state_attr("climate.lg_dehumidifier_jeseubgi_anbang", "state") == "on" %}켜짐{% else %}꺼짐{% endif %}'
+    dh_bedroom_airremoval:
+      friendly_name: '공기제균'
+      icon_template: mdi:air-filter
+      value_template: '{% if state_attr("climate.lg_dehumidifier_jeseubgi_anbang", "airremoval_mode") == "ON" %}켜짐{% else %}꺼짐{% endif %}'
+    dh_bedroom_mode:
+      friendly_name: '모드'
+      icon_template: mdi:play-box-outline
+      value_template: '{{ state_attr("climate.lg_dehumidifier_jeseubgi_anbang", "preset_mode") }}'
+    dh_bedroom_fan:
+      friendly_name: '풍량'
+      icon_template: mdi:fan
+      value_template: '{{ state_attr("climate.lg_dehumidifier_jeseubgi_anbang", "fan_mode") }}'
+    dh_bedroom_humidity:
+      friendly_name: '현재습도'
+      icon_template: mdi:water-percent
+      value_template: '{{ state_attr("climate.lg_dehumidifier_jeseubgi_anbang", "humidity") }}'
+    dh_bedroom_target_humidity:
+      friendly_name: '목표습도'
+      icon_template: mdi:target
+      value_template: '{{ state_attr("climate.lg_dehumidifier_jeseubgi_anbang", "target_humidity") }}'

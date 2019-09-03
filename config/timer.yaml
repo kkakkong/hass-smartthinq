@@ -1,0 +1,7 @@
+# LG SmartThinq
+dryer_remain_timer:
+  name: Dryer RemainTime Timer
+washer_remain_timer:
+  name: Washer RemainTime Timer
+washer_mini_remain_timer:
+  name: WasherMini RemainTime Timer
