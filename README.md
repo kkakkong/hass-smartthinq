@@ -46,6 +46,7 @@ Credits
 -------
 
 This is by [GuGU927][andy]. The license is [MIT][].
+
 For Korean user, visit [HomeAssistant Naver Cafe][cafe]
 
 This library originated from [Adrian Sampson][sampson]
