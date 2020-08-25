@@ -81,7 +81,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     client = wideq.Client.from_token(refresh_token, region, language)
     dryers = []
     washers = []
-	dishwashers = []
+    dishwashers = []
 
     for device_id in hass.data[KEY_SMARTTHINQ_DEVICES]:
         device = client.get_device(device_id)
@@ -123,7 +123,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     if washers:
         add_devices(washers, True)
     if dishwashers:
-        add_entities(dishwashers, True)	
+        add_devices(dishwashers, True)	
 			
     return True
 
